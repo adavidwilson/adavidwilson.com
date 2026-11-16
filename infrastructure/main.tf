@@ -3,7 +3,7 @@
 # it up; we do not manage zone creation or its nameservers.
 data "cloudflare_zone" "site" {
   filter = {
-    name_regex = var.zone_name
+    name = var.zone_name
   }
 }
 
