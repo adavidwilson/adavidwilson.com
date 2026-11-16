@@ -77,7 +77,9 @@ jobs:
     runs-on: ubuntu-latest
     # Only for pushes to the production branch (never from forks).
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: build-and-plan
+    # Intentionally no `needs`: deploy does its own build and must run on
+    # main even though the PR-only plan job is skipped on pushes. A skipped
+    # dependency would otherwise cascade and skip deploy too.
 
     steps:
       - name: Checkout
