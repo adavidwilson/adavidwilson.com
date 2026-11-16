@@ -42,4 +42,3 @@ resource "cloudflare_workers_custom_domain" "site" {
   hostname   = data.cloudflare_zone.site.name
   service    = cloudflare_worker.site.name
 }
-

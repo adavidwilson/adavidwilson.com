@@ -3,14 +3,9 @@ name: Deploy
 on:
   push:
     branches: [main]
-  # Triggered by the CMS header's "Publish Changes" button (event type
-  # `sveltia-cms-publish`). Deploys everything committed-but-unpublished
-  # without needing a new commit. No token/webhook required for GitHub Actions.
   repository_dispatch:
     types: [sveltia-cms-publish]
 
-# Prevent overlapping production applies. A new push queues behind a running
-# apply instead of cancelling it.
 concurrency:
   group: deploy-main
   cancel-in-progress: false
@@ -24,7 +19,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # The `still` theme is a git submodule; Zola needs its files.
           submodules: recursive
 
       - name: Install pinned Zola
@@ -51,8 +45,6 @@ jobs:
         working-directory: infrastructure
         run: terraform fmt -check -recursive
 
-      # Runs remotely in HCP Terraform. The Cloudflare API token is provided
-      # by the HCP workspace (CLOUDFLARE_API_TOKEN), not by GitHub secrets.
       - name: terraform init & apply
         working-directory: infrastructure
         run: |
