@@ -119,4 +119,4 @@ jobs:
           terraform init -input=false
           terraform apply -input=false -auto-approve -no-color
         env:
-          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+          TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
