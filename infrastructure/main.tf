@@ -19,7 +19,7 @@ resource "cloudflare_worker_version" "site" {
 
     config = {
       not_found_handling = "404-page"
-      html_handling = "auto-trailing-slash"
+      html_handling      = "auto-trailing-slash"
     }
   }
 }
@@ -39,7 +39,7 @@ resource "cloudflare_workers_deployment" "site" {
 
 resource "cloudflare_workers_custom_domain" "site" {
   account_id = var.account_id
-  hostname = data.cloudflare_zone.site.name
-  service = cloudflare_worker.site.name
+  hostname   = data.cloudflare_zone.site.name
+  service    = cloudflare_worker.site.name
 }
 
