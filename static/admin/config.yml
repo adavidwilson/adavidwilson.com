@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+backend:
+  name: github
+  repo: me/myblog
+  branch: main
+
+media_folder: /static/uploads
+public_folder: /uploads
+
+collections:
+  - name: posts
+    label: Posts
+    label_singular: Post
+    folder: /content/posts
+    create: true
+    delete: false
+    slug: '{{slug}}'
+    extension: md
+    format: toml-frontmatter
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, type: date, default: '{{today}}' }
+      - { label: Body, name: body, widget: markdown, required: true }

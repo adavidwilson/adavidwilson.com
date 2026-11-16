@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set date_format = config.extra.still_date_format | default(value="%Y-%m-%d") %}
+{% set posts = get_section(path="posts/_index.md") %}
+{% set recent = posts.pages | sort(attribute="date") | reverse %}
+
+{% if section.content %}
+<article class="section-intro home-intro">
+  {{ section.content | safe }}
+</article>
+{% endif %}
+
+{% if recent %}
+<nav class="home-recent" aria-label="Recent posts">
+  <h3>Read a few sample posts</h3>
+  <ul>
+    {% for post in recent %}
+    {% if loop.index <= 3 %}
+    <li>
+      <a href="{{ post.permalink }}">{{ post.title }}</a>
+      {% if post.date %}
+      <span class="post-date">{{ post.date | date(format=date_format) }}</span>
+      {% endif %}
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+  <p class="home-recent-all"><a href="{{ posts.permalink }}">View all posts →</a></p>
+</nav>
+{% endif %}
+
+<footer class="home-footer">
+  Built with <a href="https://www.getzola.org/">Zola</a>. Theme: <a href="https://github.com/wjianbo/zola-theme-still">still</a>.
+</footer>
+{% endblock content %}
