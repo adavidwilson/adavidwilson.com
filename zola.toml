@@ -1,12 +1,12 @@
-# The URL the site will be built for
 base_url = "https://adavidwilson.com"
-
-# Whether to automatically compile all Sass files in the sass directory
+title = "David's Blog"
+description = "A techie's musings."
+author = "David A. Wilson"
 compile_sass = true
-
-# Whether to build a search index to be used later on by a JavaScript library
 build_search_index = false
-
+generate_feeds = true
+feed_filenames = ["atom.xml"]
+default_language = "en"
 theme = "still"
 
 [markdown]
@@ -15,4 +15,5 @@ theme = "still"
 theme = "catppuccin-mocha"
 
 [extra]
-# Put all your custom variables here
+still_date_format = "%Y-%m-%d"
+still_show_author = true
