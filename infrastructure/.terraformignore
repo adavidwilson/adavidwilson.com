@@ -1,0 +1,6 @@
+# Local Terraform install (provider binaries) — never upload to HCP.
+.terraform/
+
+# State is managed remotely by HCP Terraform; never upload local state.
+*.tfstate
+*.tfstate.*

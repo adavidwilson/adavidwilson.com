@@ -1,0 +1,13 @@
+# Copy to `terraform.tfvars` for LOCAL use only (this file is git-ignored).
+# In CI/HCP, set these as HCP Terraform workspace variables instead so real
+# values never live in the repository.
+#
+#   account_id   -> REQUIRED, set as an HCP workspace variable (see README)
+#   zone_name, custom_domain, worker_name, compatibility_date -> have repo
+#     defaults; override in the HCP workspace only if needed.
+
+account_id           = "REPLACE_WITH_CLOUDFLARE_ACCOUNT_ID"
+zone_name            = "adavidwilson.com"
+custom_domain        = "adavidwilson.com"
+worker_name          = "adavidwilson-site"
+compatibility_date   = "2025-01-01"
