@@ -4,6 +4,11 @@ A minimal [Zola](https://www.getzola.org/) blog (the **still** theme) deployed a
 a static site on **Cloudflare Workers** via **Terraform**, built and released
 through **GitHub Actions** using **HCP Terraform** CLI-driven remote runs.
 
+## TODO
+
+- Fix page titles to include descriptions after "|"
+- Continue refactoring/cleaning up after Hermes
+
 ## How it works
 
 ```

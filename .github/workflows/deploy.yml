@@ -1,9 +1,13 @@
 name: Deploy
 
 on:
-  pull_request:
   push:
     branches: [main]
+  # Triggered by the CMS header's "Publish Changes" button (event type
+  # `sveltia-cms-publish`). Deploys everything committed-but-unpublished
+  # without needing a new commit. No token/webhook required for GitHub Actions.
+  repository_dispatch:
+    types: [sveltia-cms-publish]
 
 # Prevent overlapping production applies. A new push queues behind a running
 # apply instead of cancelling it.
@@ -12,79 +16,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-plan:
-    name: Build & plan
+  deploy:
+    name: Deploy to Cloudflare
     runs-on: ubuntu-latest
-    # Only for pull requests.
-    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           # The `still` theme is a git submodule; Zola needs its files.
-          submodules: recursive
-
-      - name: Install pinned Zola
-        run: |
-          curl -sSL https://github.com/getzola/zola/releases/download/v0.23.6/zola-v0.23.6-x86_64-unknown-linux-gnu.tar.gz -o zola.tar.gz
-          tar -xzf zola.tar.gz
-          chmod +x zola
-          ./zola --version
-
-      - name: zola check
-        run: ./zola check --skip-external-links
-
-      - name: zola build
-        run: ./zola --config zola.toml build
-
-      - name: Stage Zola output for Terraform
-        run: |
-          mkdir -p infrastructure/generated
-          cp -r public infrastructure/generated/public
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.10.0
-
-      - name: terraform fmt
-        working-directory: infrastructure
-        run: terraform fmt -check -recursive
-
-      - name: terraform init & validate
-        working-directory: infrastructure
-        run: |
-          # -backend=false: validates config without HCP credentials, so this
-          # runs for fork PRs too (which have no access to TF_API_TOKEN).
-          terraform init -backend=false
-          terraform validate
-
-      # A speculative remote plan needs HCP access. HCP/GitHub never expose
-      # secrets to fork pull requests, so skip the plan for forks (the safe
-      # checks above still run).
-      - name: Remote speculative plan (HCP Terraform)
-        if: github.event.pull_request.fork == false
-        working-directory: infrastructure
-        run: |
-          terraform init -input=false
-          terraform plan -input=false -no-color
-        env:
-          TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
-
-  deploy:
-    name: Deploy to Cloudflare
-    runs-on: ubuntu-latest
-    # Only for pushes to the production branch (never from forks).
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    # Intentionally no `needs`: deploy does its own build and must run on
-    # main even though the PR-only plan job is skipped on pushes. A skipped
-    # dependency would otherwise cascade and skip deploy too.
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
           submodules: recursive
 
       - name: Install pinned Zola
