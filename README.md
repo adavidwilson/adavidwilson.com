@@ -6,8 +6,9 @@ through **GitHub Actions** using **HCP Terraform** CLI-driven remote runs.
 
 ## TODO
 
-- Fix page titles to include descriptions after "|"
-- Continue refactoring/cleaning up after Hermes
+- Fix monospace and code block CSS
+    - Code blocks appear with a dark background and really bad contrast text in light mode. It's slightly better in dark mode but not much.
+    - Monospace is fine in light mode, but completely illegible in dark mode.
 
 ## How it works
 
