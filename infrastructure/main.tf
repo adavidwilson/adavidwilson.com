@@ -59,4 +59,7 @@ resource "cloudflare_workers_route" "site" {
   zone_id = data.cloudflare_zone.site.id
   pattern = "${var.custom_domain}/*"
   script  = cloudflare_worker.site.name
+  depends_on = [
+    cloudflare_worker.site
+  ]
 }
