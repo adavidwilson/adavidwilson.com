@@ -10,6 +10,7 @@ default_language = "en"
 theme = "still"
 
 [markdown]
+bottom_footnotes = true
 
 [markdown.highlighting]
 theme = "catppuccin-mocha"
