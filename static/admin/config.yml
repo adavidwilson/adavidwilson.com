@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
 backend:
   name: github
-  repo: me/myblog
+  repo: adavidwilson/adavidwilson.com
   branch: main
 
 media_folder: /static/uploads
