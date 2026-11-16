@@ -11,6 +11,6 @@ Hermes helped do a lot of the greenfield setup, but given that I'm limiting myse
 
 This site is hosted on a [Cloudflare Worker](https://www.cloudflare.com/products/workers/) deployed by [GitHub Actions](https://github.com/features/actions) using [Terraform](https://developer.hashicorp.com/terraform) run on [HCP Terraform](https://developer.hashicorp.com/terraform/cloud-docs) for free state management. It falls well within the free tiers of all these products, so the only cost is the custom domain at around $1 a month. It uses [Zola](https://www.getzola.org/) for static site generation and [still](https://github.com/wjianbo/zola-theme-still) for the theme.
 
-In the past, I've found it very annoying have to edit markdown directly and manually push changes, so this time around I'm using [Sveltia CMS](https://sveltiacms.app/en/docs/backends/github#access-token)[ with a personal access token](https://sveltiacms.app/en/docs/backends/github#access-token) so I can make changes on any device with a browser!
+In the past, I've found it very annoying having to edit markdown directly and manually push changes, so this time around I'm using [Sveltia CMS with a personal access token](https://sveltiacms.app/en/docs/backends/github#access-token) so I can make changes on any device with a browser!
 
 I hope to put together some short posts showcasing specific things I've learned so far, so stay tuned.
