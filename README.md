@@ -4,32 +4,20 @@ A minimal [Zola](https://www.getzola.org/) blog (the **still** theme) deployed a
 a static site on **Cloudflare Workers** via **Terraform**, built and released
 through **GitHub Actions** using **HCP Terraform** CLI-driven remote runs.
 
-## TODO
-
-- Fix monospace and code block CSS
-    - Code blocks appear with a dark background and really bad contrast text in light mode. It's slightly better in dark mode but not much.
-    - Monospace is fine in light mode, but completely illegible in dark mode.
-
 ## How it works
 
 ```
-push / PR  ──▶  GitHub Actions
-                 │  1. install pinned Zola
-                 │  2. zola check --skip-external-links  +  zola build
-                 │  3. stage output → infrastructure/generated/public
-                 │  4. terraform fmt -check + validate
-                 ▼
-   pull request        push to main
-   (non-fork only)         │
-   │                     5. terraform init (HCP backend)
-   │                     6. terraform plan  ← speculative plan in HCP
-   │                     7. terraform apply → HCP runs it remotely
-   ▼                         │
-speculative plan        Cloudflare provider creates/updates:
-in HCP Terraform          • cloudflare_worker (the Worker)
-                          • cloudflare_worker_version (assets = generated/public)
-                          • cloudflare_workers_deployment (routes traffic)
-                          • cloudflare_workers_route (adavidwilson.com/*)
+push to main / CMS dispatch  ──▶  GitHub Actions
+                                   │  1. install pinned Zola
+                                   │  2. zola build
+                                   │  3. stage output → infrastructure/generated/public
+                                   │  4. terraform fmt + init + apply (via HCP)
+                                   ▼
+                        Cloudflare provider creates/updates:
+                        • cloudflare_worker (the Worker)
+                        • cloudflare_worker_version (assets = generated/public)
+                        • cloudflare_workers_deployment (routes traffic)
+                        • cloudflare_workers_custom_domain (adavidwilson.com)
 ```
 
 Terraform is the single source of truth for the Cloudflare infrastructure.
@@ -44,12 +32,11 @@ templates/, static/, themes/  Theme files (still is a git submodule)
 infrastructure/               Terraform config (Cloudflare Workers)
   versions.tf                 Provider pin (cloudflare 5.29.0) + HCP `cloud` block
   variables.tf                account_id (required), zone/domain/worker/date
-  main.tf                     Worker / version / deployment / route / zone lookup
-  outputs.tf                  worker_name, domain, deployment_id
+  main.tf                     Worker / version / deployment / custom_domain
   terraform.tfvars.example    Local-only template (git-ignored)
   .terraformignore            Excludes .terraform/ and state; NOT generated/
   README.md                   This file
-.github/workflows/deploy.yml  Zola build + Terraform plan/apply via HCP
+.github/workflows/deploy.yml  Zola build + Terraform apply via HCP
 ```
 
 ---
@@ -100,7 +87,7 @@ infrastructure/               Terraform config (Cloudflare Workers)
    | Zone                    | Read |
 
    These let Terraform create/update the Worker, its versions, the deployment,
-   and the route, and look up the zone — and nothing else (no DNS record
+   and the custom domain, and look up the zone — and nothing else (no DNS record
    edits, no account changes).
 2. In the HCP workspace: **Variables → Environment variables → Add**, name
    `CLOUDFLARE_API_TOKEN`, paste the token, and toggle **Sensitive**.
@@ -112,13 +99,13 @@ infrastructure/               Terraform config (Cloudflare Workers)
 1. In HCP: **Organization Settings → API Tokens → Team tokens → Generate token**
    for a dedicated CI team (create a team first if needed, e.g. `ci`).
    - Grant that team **`write`** access to the workspace (allows plan **and**
-     apply). For plan-only, use `plan`.
+     apply).
    - Set an **expiry** and give the token a description.
 2. In GitHub: **Settings → Secrets and variables → Actions → New repository
    secret**, name it **`TF_API_TOKEN`**, value = the HCP team token.
 
-   > GitHub does **not** expose repository secrets to workflows triggered by
-   > fork pull requests, so the token never leaves trusted runs.
+   > The workflow maps this secret to `TF_TOKEN_app_terraform_io` so that
+   > Terraform can authenticate with HCP during the run.
 
 ### 4. Set the non-secret workspace variables
 
@@ -140,25 +127,25 @@ can instead copy `infrastructure/terraform.tfvars.example` to
 
 The `adavidwilson.com` zone must already exist in Cloudflare. If you created a
 new zone, point your registrar's nameservers at Cloudflare. **No DNS record is
-needed for the apex** — the managed `cloudflare_workers_route` serves it. (Do
+needed for the apex** — the managed `cloudflare_workers_custom_domain` serves it. (Do
 not also add a matching A/CNAME record; that would be duplicate ownership.)
 
 ---
 
 ## Deploying
 
-Commit and push:
+### Via Git
+
+Commit and push to `main`:
 
 ```bash
 git add -A && git commit -m "..." && git push
 ```
 
-- **On a pull request:** GitHub Actions builds the site, stages the output, and
-  runs `terraform fmt -check`, `terraform validate`, and a **speculative plan**
-  in HCP Terraform (non-fork PRs only). No changes are made to Cloudflare.
-- **On a push to `main`:** the site is rebuilt and `terraform apply` runs
-  remotely in HCP Terraform, creating/updating the Worker, version, deployment,
-  and route. Applies are serialized (overlapping production applies are blocked).
+### Via Sveltia CMS
+
+Triggering a publish event in Sveltia CMS sends a `repository_dispatch` to GitHub,
+which kicks off the deployment workflow.
 
 ### Where to look
 
@@ -166,7 +153,6 @@ git add -A && git commit -m "..." && git push
 - **Terraform plans & applies:** the run in the HCP workspace UI
   (`app.terraform.io` → organization → workspace → Runs). The generated site
   files uploaded as the run configuration are listed there too.
-- **Terraform outputs** (worker name, domain, deployment id): on each run's
   *Outputs* tab.
 
 ---
@@ -175,7 +161,7 @@ git add -A && git commit -m "..." && git push
 
 ```bash
 # Build the site
-zola --config zola.toml build
+zola build
 
 # Validate the Terraform (no HCP/Cloudflare credentials needed)
 cd infrastructure
@@ -189,7 +175,7 @@ To run a real plan/apply locally, set `account_id` (see
 
 ```bash
 cd infrastructure
-terraform init            # logs in to HCP using TF_API_TOKEN (or `terraform login`)
+terraform init            # logs in to HCP using TF_TOKEN_app_terraform_io (or `terraform login`)
 terraform plan
 terraform apply
 ```
