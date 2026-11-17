@@ -1,50 +1,38 @@
 name: Deploy
-
 on:
   push:
     branches: [main]
   repository_dispatch:
     types: [sveltia-cms-publish]
-
 concurrency:
   group: deploy-main
   cancel-in-progress: false
-
 jobs:
   deploy:
     name: Deploy to Cloudflare
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
-
       - name: Install pinned Zola
         run: |
           curl -sSL https://github.com/getzola/zola/releases/download/v0.23.6/zola-v0.23.6-x86_64-unknown-linux-gnu.tar.gz -o zola.tar.gz
           tar -xzf zola.tar.gz
           chmod +x zola
           ./zola --version
-
       - name: zola build
         run: ./zola --config zola.toml build
-
       - name: Stage Zola output for Terraform
         run: |
           mkdir -p infrastructure/generated
           cp -r public infrastructure/generated/public
-
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.10.0
-
+        uses: hashicorp/setup-terraform@v4
       - name: terraform fmt
         working-directory: infrastructure
         run: terraform fmt -check -recursive
-
       - name: terraform init & apply
         working-directory: infrastructure
         run: |
