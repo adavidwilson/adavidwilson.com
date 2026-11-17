@@ -1,7 +1,11 @@
-/* Inline code: no background pill. Fenced code blocks (<pre>) keep the
-   background colour supplied by the markdown highlighter itself. */
 :root {
-  --code-bg: transparent;
+  --code-bg: #faf4ed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --code-bg: #191724;
+  }
 }
 
 code {
