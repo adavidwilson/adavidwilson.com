@@ -14,6 +14,8 @@ service:
     network_mode: service:tailscale
 ```
 
+---
+
 While developing my current local AI agent stack, I ran into an annoying oversight in the Tailscale docs.
 
 The first thing you'll find if you do a web search for "Tailscale in Docker Compose" is a doc that leaves out that extremely important line in the compose file.[^tailscale-doc]
