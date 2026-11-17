@@ -13,7 +13,8 @@ theme = "still"
 bottom_footnotes = true
 
 [markdown.highlighting]
-theme = "catppuccin-mocha"
+light_theme = "catppuccin-latte"
+dark_theme  = "catppuccin-mocha"
 
 [extra]
 still_date_format = "%Y-%m-%d"

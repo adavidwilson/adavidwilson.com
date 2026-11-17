@@ -1,0 +1,9 @@
+/* Inline code: no background pill. Fenced code blocks (<pre>) keep the
+   background colour supplied by the markdown highlighter itself. */
+:root {
+  --code-bg: transparent;
+}
+
+code {
+  background: var(--code-bg);
+}
