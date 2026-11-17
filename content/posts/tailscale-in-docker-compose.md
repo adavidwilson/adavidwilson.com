@@ -6,7 +6,7 @@ date = 2026-11-16
 **TLDR:**
 
 ```yaml
-service:
+services:
   tailscale:
     ...
   app:
@@ -14,7 +14,7 @@ service:
     network_mode: service:tailscale
 ```
 
----
+***
 
 While developing my current local AI agent stack, I ran into an annoying oversight in the Tailscale docs.
 
@@ -26,7 +26,7 @@ Even if both the `nginx` and `tailscale` services are in the same Docker network
 
 What the service network mode does is essentially treat both services as though they are on the same host: `localhost` on `tailscale` is `localhost` on `nginx`. That way, any ports served by your application services in the compose stack are immediately available to the `tailscale` service container as though they were being served by the same Docker image.
 
-Eventually, I found the original example from 2024 detailing the solution, and finally got it to work\![^solution]
+Eventually, I found the original example from 2024 detailing the solution, and finally got it to work![^solution]
 
 [^tailscale-doc]: [https://tailscale.com/docs/features/containers/docker/how-to/connect-docker-container](https://tailscale.com/docs/features/containers/docker/how-to/connect-docker-container)
 [^solution]: [https://github.com/tailscale-dev/docker-guide-code-examples/blob/main/03-nginx-example/compose.yaml](https://github.com/tailscale-dev/docker-guide-code-examples/blob/main/03-nginx-example/compose.yaml)
