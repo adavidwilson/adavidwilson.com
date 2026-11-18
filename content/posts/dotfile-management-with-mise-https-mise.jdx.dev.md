@@ -7,10 +7,11 @@ date = 2026-11-18
 
 ```bash
 # Configure the watcher
-cat <<‘EOF’ > "~/.config/mise/config.toml"
-[bootstrap.services.mise-history]
-builtin = "history-watch"
-EOF
+#
+# Put the following in "~/.config/mise/config.toml":
+#
+# [bootstrap.services.mise-history]
+# builtin = "history-watch"
 
 # Track at least mise's own config to github
 mise dot track ~/.config/mise
