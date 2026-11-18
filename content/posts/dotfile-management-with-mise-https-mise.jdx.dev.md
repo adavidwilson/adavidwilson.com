@@ -6,10 +6,7 @@ date = 2026-11-18
 **TLDR:**
 
 ```bash
-# Configure the watcher
-#
 # Put the following in "~/.config/mise/config.toml":
-#
 # [bootstrap.services.mise-history]
 # builtin = "history-watch"
 
